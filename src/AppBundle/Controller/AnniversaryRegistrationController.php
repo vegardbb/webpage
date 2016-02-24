@@ -15,10 +15,7 @@ class AnniversaryRegistrationController extends Controller
 {
    const REGISTRATION_LIMIT = 65;
    public function showAction(Request $request){
-<<<<<<< HEAD
-=======
       return $this->render('anniversary_registration/registrationEnded.html.twig');
->>>>>>> origin/master
       $em = $this->getDoctrine()->getEntityManager();
       $registrations = $em->getRepository('AppBundle:AnniversaryRegistration')->findAll();
       if(sizeof($registrations) >= self::REGISTRATION_LIMIT){
