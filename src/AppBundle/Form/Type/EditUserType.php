@@ -12,19 +12,19 @@ class EditUserType extends AbstractType {
 	private $departmentId;
 
 
-    public function __construct($departmentId)
-    {
-        $this->departmentId = $departmentId;
-    }
+	public function __construct($departmentId)
+	{
+		$this->departmentId = $departmentId;
+	}
 	
 	
-    public function buildForm(FormBuilderInterface $builder, array $options) {
+	public function buildForm(FormBuilderInterface $builder, array $options) {
 		 
 		$builder
 			->add('user_name', 'text', array(
 				'label' => 'Brukernavn',
 			))
-            ->add('firstName', 'text', array(
+			->add('firstName', 'text', array(
 				'label' => 'Fornavn',
 			))
 			->add('lastName', 'text', array(
@@ -50,18 +50,18 @@ class EditUserType extends AbstractType {
 			->add('save', 'submit', array(
 				'label' => 'Lagre',
 			));
-    }
+	}
 	
 	public function setDefaultOptions(OptionsResolverInterface $resolver) {
 	
-        $resolver->setDefaults(array(
-            'data_class' => 'AppBundle\Entity\User',
-        ));
+		$resolver->setDefaults(array(
+			'data_class' => 'AppBundle\Entity\User',
+		));
 		
-    }
+	}
 	
-    public function getName() {
-        return 'editUser';
-    }
+	public function getName() {
+		return 'editUser';
+	}
 	
 }
