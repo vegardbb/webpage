@@ -3,10 +3,12 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  *
- * @ORM\Table(name="AssistantHistory")
+ * @ORM\Table(name="assistant_history")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\AssistantHistoryRepository")
  */
 class AssistantHistory {
@@ -19,7 +21,7 @@ class AssistantHistory {
 	protected $id;
 	
 	/**
-     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\ManyToOne(targetEntity="User", inversedBy="assistantHistories")
      **/
     protected $user;
 	
@@ -37,17 +39,20 @@ class AssistantHistory {
 	
 	/**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
 	protected $workdays;
 
     /**
      * @ORM\Column(type="string", nullable=true)
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $bolk;
 
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $day;
 	

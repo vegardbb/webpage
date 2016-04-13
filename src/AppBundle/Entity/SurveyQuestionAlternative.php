@@ -3,6 +3,8 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * @ORM\Entity
@@ -19,6 +21,7 @@ class SurveyQuestionAlternative
 
     /**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $alternative;
 
@@ -82,5 +85,10 @@ class SurveyQuestionAlternative
     public function getSurveyQuestion()
     {
         return $this->surveyQuestion;
+    }
+
+    public function __clone() {
+        $this->id = null;
+        $this->surveyQuestion = null;
     }
 }

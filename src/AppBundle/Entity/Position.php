@@ -4,10 +4,12 @@ namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  *
- * @ORM\Table(name="Position")
+ * @ORM\Table(name="position")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\PositionRepository")
  */
 class Position {
@@ -21,6 +23,7 @@ class Position {
 	
 	/**
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $name;
 	

@@ -3,9 +3,10 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\InterviewRepository")
  * @ORM\Table(name="interview")
  */
 class Interview
@@ -21,6 +22,11 @@ class Interview
      * @ORM\Column(type="boolean")
      */
     protected $interviewed;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $cancelled;
 
     /**
      * @ORM\Column(type="datetime", nullable=true)
@@ -45,27 +51,22 @@ class Interview
     protected $interviewer; // Unidirectional, may turn out to be bidirectional
 
     /**
-     * @ORM\OneToOne(targetEntity="Application", inversedBy="interview")
-     * @ORM\JoinColumn(name="application_id", referencedColumnName="id")
-     */
-    protected $application;
-
-    /**
      * @ORM\OneToMany(targetEntity="InterviewAnswer", mappedBy="interview", cascade={"persist", "remove"}, orphanRemoval=true)
+     * @Assert\Valid
      */
     protected $interviewAnswers;
 
     /**
      * @ORM\OneToOne(targetEntity="InterviewScore", cascade={"persist"})
      * @ORM\JoinColumn(name="interview_score_id", referencedColumnName="id")
+     * @Assert\Valid
      */
     protected $interviewScore;
 
     /**
-     * @ORM\OneToOne(targetEntity="InterviewPractical", cascade={"persist"})
-     * @ORM\JoinColumn(name="interview_practical_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="User", cascade={"persist"})
      */
-    protected $interviewPractical;
+    protected $user;
 
     /**
      * Constructor
@@ -73,6 +74,8 @@ class Interview
     public function __construct()
     {
         $this->interviewAnswers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->interviewed = false;
+        $this->cancelled = false;
     }
 
     /**
@@ -129,29 +132,6 @@ class Interview
     public function getInterviewer()
     {
         return $this->interviewer;
-    }
-
-    /**
-     * Set application
-     *
-     * @param \AppBundle\Entity\Application $application
-     * @return Interview
-     */
-    public function setApplication(\AppBundle\Entity\Application $application = null)
-    {
-        $this->application = $application;
-
-        return $this;
-    }
-
-    /**
-     * Get application
-     *
-     * @return \AppBundle\Entity\Application
-     */
-    public function getApplication()
-    {
-        return $this->application;
     }
 
     /**
@@ -234,6 +214,24 @@ class Interview
     }
 
     /**
+     * @return boolean
+     */
+    public function getCancelled()
+    {
+        return $this->cancelled;
+    }
+
+    /**
+     * @param boolean $cancelled
+     */
+    public function setCancelled($cancelled)
+    {
+        $this->cancelled = $cancelled;
+    }
+
+
+
+    /**
      * Is the given User the interviewer of this Interview?
      *
      * @param User $user
@@ -242,29 +240,6 @@ class Interview
     public function isInterviewer(User $user = null)
     {
         return $user && $user->getId() == $this->getInterviewer()->getId();
-    }
-
-    /**
-     * Set interviewPractical
-     *
-     * @param \AppBundle\Entity\InterviewPractical $interviewPractical
-     * @return Interview
-     */
-    public function setInterviewPractical(\AppBundle\Entity\InterviewPractical $interviewPractical = null)
-    {
-        $this->interviewPractical = $interviewPractical;
-
-        return $this;
-    }
-
-    /**
-     * Get interviewPractical
-     *
-     * @return \AppBundle\Entity\InterviewPractical 
-     */
-    public function getInterviewPractical()
-    {
-        return $this->interviewPractical;
     }
 
     /**
@@ -311,5 +286,21 @@ class Interview
     public function getConducted()
     {
         return $this->conducted;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param User $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
     }
 }

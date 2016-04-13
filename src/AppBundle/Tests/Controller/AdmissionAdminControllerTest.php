@@ -15,7 +15,7 @@ class AdmissionAdminControllerTest extends WebTestCase {
         ));
 
         // New applications
-        $crawler = $client->request('GET', '/opptakadmin');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -26,13 +26,12 @@ class AdmissionAdminControllerTest extends WebTestCase {
         // Assert that we have the correct buttons for superadmin
         $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
         $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertGreaterThan(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertGreaterThan(1, $crawler->filter('a:contains("Fordel")')->count());
+        $this->assertEquals(3, $crawler->filter('td>a:contains("Slett")')->count());
+        $this->assertEquals(3, $crawler->filter('td>a:contains("Fordel")')->count());
 
 
         // Assigned to interview applications
-        $crawler = $client->request('GET', '/opptakadmin?status=assigned');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=assigned');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -43,12 +42,12 @@ class AdmissionAdminControllerTest extends WebTestCase {
         // Assert that we have the correct buttons for superadmin
         $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
         $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Sett opp")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Intervju")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Sett opp")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Intervju")')->count());
 
 
         // Interviewed applications
-        $crawler = $client->request('GET', '/opptakadmin?status=interviewed');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=interviewed');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -59,9 +58,8 @@ class AdmissionAdminControllerTest extends WebTestCase {
         // Assert that we have the correct buttons for superadmin
         $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
         $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Les intervju")')->count());
-        $this->assertGreaterThan(2, $crawler->filter('a:contains("Slett")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a.button:contains("Les intervju")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a.button:contains("Slett")')->count());
 
 
         // Admin user
@@ -71,7 +69,7 @@ class AdmissionAdminControllerTest extends WebTestCase {
         ));
 
         // New applications
-        $crawler = $client->request('GET', '/opptakadmin');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -82,13 +80,12 @@ class AdmissionAdminControllerTest extends WebTestCase {
         // Assert that we only have the buttons for admin
         $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
         $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertGreaterThan(1, $crawler->filter('a:contains("Fordel")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a:contains("Slett")')->count());
+        $this->assertEquals(4, $crawler->filter('a:contains("Fordel")')->count());
 
 
         // Assigned to interview applications
-        $crawler = $client->request('GET', '/opptakadmin?status=assigned');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=assigned');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -99,12 +96,12 @@ class AdmissionAdminControllerTest extends WebTestCase {
         // Assert that we only have the buttons for admin
         $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
         $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Sett opp")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Intervju")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Sett opp")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Intervju")')->count());
 
 
         // Interviewed applications
-        $crawler = $client->request('GET', '/opptakadmin?status=interviewed');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=interviewed');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -115,9 +112,8 @@ class AdmissionAdminControllerTest extends WebTestCase {
         // Assert that we only have the buttons for admin
         $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
         $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertEquals(2, $crawler->filter('a.button:contains("Opprett")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Les intervju")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a.button.tiny:contains("Slett")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a.button.tiny:contains("Les intervju")')->count());
 
         // Team user
         $client = static::createClient(array(), array(
@@ -126,7 +122,7 @@ class AdmissionAdminControllerTest extends WebTestCase {
         ));
 
         // New applications
-        $crawler = $client->request('GET', '/opptakadmin');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -135,15 +131,14 @@ class AdmissionAdminControllerTest extends WebTestCase {
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
 
         // Assert that we only have the buttons for team
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(4, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a.button:contains("Opprett")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertEquals(1, $crawler->filter('a:contains("Fordel")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Ny søker")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a.button:contains("Slett")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a.button:contains("Fordel")')->count());
 
 
         // Assign to interview applications
-        $crawler = $client->request('GET', '/opptakadmin?status=assigned');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=assigned');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -152,14 +147,13 @@ class AdmissionAdminControllerTest extends WebTestCase {
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
 
         // Assert that we only have the buttons for team
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(4, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertEquals(0, $crawler->filter('a:contains("Sett opp")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a:contains("Sett opp")')->count());
         $this->assertEquals(0, $crawler->filter('td>a:contains("Intervju")')->count());
 
 
         // Interviewed applications
-        $crawler = $client->request('GET', '/opptakadmin?status=interviewed');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=interviewed');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -168,11 +162,9 @@ class AdmissionAdminControllerTest extends WebTestCase {
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
 
         // Assert that we only have the buttons for team
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(4, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertEquals(1, $crawler->filter('a.button:contains("Opprett")')->count());
-        $this->assertEquals(1, $crawler->filter('a:contains("Les intervju")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Slett")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Les intervju")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a:contains("Slett")')->count());
 
 
         // Assistant user
@@ -181,7 +173,7 @@ class AdmissionAdminControllerTest extends WebTestCase {
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/opptakadmin');
+        $client->request('GET', '/kontrollpanel/opptakadmin');
 
         // Assert that the page response status code is 403 Access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -196,7 +188,7 @@ class AdmissionAdminControllerTest extends WebTestCase {
         ));
 
         // New applications
-        $crawler = $client->request('GET', '/opptakadmin/avdeling/1?status=new');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1?status=new');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -205,44 +197,42 @@ class AdmissionAdminControllerTest extends WebTestCase {
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
 
         // Assert that we have the correct buttons for superadmin
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertGreaterThan(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertGreaterThan(1, $crawler->filter('a:contains("Fordel")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("NTNU")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(3, $crawler->filter('td>a:contains("Slett")')->count());
+        $this->assertEquals(3, $crawler->filter('td>a:contains("Fordel")')->count());
 
 
         // Assigned to interview applications
-        $crawler = $client->request('GET', 'http://localhost:8000/opptakadmin/avdeling/1?status=assigned');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1?status=assigned');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
+        $this->assertEquals(1, $crawler->filter('h1:contains("Opptak NTNU")')->count());
 
         // Assert that we have the correct buttons for superadmin
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Sett opp")')->count());
-        $this->assertGreaterThan(1, $crawler->filter('a:contains("Intervju")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("NTNU")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Sett opp")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Intervju")')->count());
 
 
         // Interviewed applications
-        $crawler = $client->request('GET', '/opptakadmin/avdeling/1?status=interviewed');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1?status=interviewed');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
+        $this->assertEquals(1, $crawler->filter('h1:contains("Opptak NTNU")')->count());
 
         // Assert that we have the correct buttons for superadmin
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Les intervju")')->count());
-        $this->assertGreaterThan(2, $crawler->filter('a:contains("Slett")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("NTNU")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Les intervju")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Slett")')->count());
 
 
         // Admin tests
@@ -252,7 +242,7 @@ class AdmissionAdminControllerTest extends WebTestCase {
         ));
 
         // New applications
-        $crawler = $client->request('GET', '/opptakadmin/avdeling/1?status=new');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1?status=new');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -261,14 +251,12 @@ class AdmissionAdminControllerTest extends WebTestCase {
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
 
         // Assert that we only have the buttons for admin
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertGreaterThan(1, $crawler->filter('a:contains("Fordel")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("NTNU")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(3, $crawler->filter('td>a:contains("Fordel")')->count());
 
         // Assigned to interview applications
-        $crawler = $client->request('GET', '/opptakadmin/avdeling/1?status=assigned');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1?status=assigned');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -277,27 +265,26 @@ class AdmissionAdminControllerTest extends WebTestCase {
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
 
         // Assert that we only have the buttons for admin
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Sett opp")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Intervju")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("NTNU")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Sett opp")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Intervju")')->count());
 
 
         // Interviewed applications
-        $crawler = $client->request('GET', '/opptakadmin/avdeling/1?status=interviewed');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1?status=interviewed');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
+        $this->assertEquals(1, $crawler->filter('h1:contains("Opptak NTNU")')->count());
 
         // Assert that we only have the buttons for admin
-        $this->assertEquals(3, $crawler->filter('a:contains("Avdeling")')->count());
-        $this->assertEquals(3, $crawler->filter('a:contains("Semester")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Opprett")')->count());
-        $this->assertEquals(2, $crawler->filter('a:contains("Slett")')->count());
-        $this->assertGreaterThan(0, $crawler->filter('a:contains("Les intervju")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("NTNU")')->count());
+        $this->assertEquals(1, $crawler->filter('a.button:contains("Vår 2016")')->count());
+        $this->assertEquals(0, $crawler->filter('td>a:contains("Slett")')->count());
+        $this->assertEquals(2, $crawler->filter('td>a:contains("Les intervju")')->count());
 
 
         // Team user
@@ -306,10 +293,26 @@ class AdmissionAdminControllerTest extends WebTestCase {
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/opptakadmin/avdeling/1');
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin/avdeling/1');
 
         // Assert that the page response status code is 403 Access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
+
+    }
+
+    public function testCancelInterview(){
+        $client = static::createClient(array(), array(
+            'PHP_AUTH_USER' => 'admin',
+            'PHP_AUTH_PW'   => '1234',
+        ));
+
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=assigned');
+        $this->assertEquals(1, $crawler->filter('td:contains("Ruben")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Ravnå")')->count());
+
+        $crawler = $client->request('GET', '/kontrollpanel/opptakadmin?status=new');
+        $this->assertEquals(0, $crawler->filter('td:contains("Ruben")')->count());
+        $this->assertEquals(0, $crawler->filter('td:contains("Ravnå")')->count());
 
     }
 

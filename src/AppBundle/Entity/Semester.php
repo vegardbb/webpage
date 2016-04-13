@@ -8,11 +8,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * @ORM\Entity
- * @UniqueEntity(
- *     fields={"semesterTime", "year"},
- *     message="Dette semesteret er allerede opprettet"
- * )
- * @ORM\Table(name="Semester")
+ * @ORM\Table(name="semester")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\SemesterRepository")
  */
 class Semester {
@@ -27,12 +23,14 @@ class Semester {
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $semesterTime;
 
     /**
      * @var string
      * @ORM\Column(type="string")
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $year;
 	
@@ -44,11 +42,13 @@ class Semester {
 
 	/**
      * @ORM\Column(type="datetime", length=150)
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $admission_start_date;
 	
 	/**
      * @ORM\Column(type="datetime", length=150)
+     * @Assert\NotBlank(message="Dette feltet kan ikke være tomt.")
      */
     protected $admission_end_date;
 

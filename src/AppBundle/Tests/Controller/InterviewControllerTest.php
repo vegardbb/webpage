@@ -16,24 +16,24 @@ class InterviewControllerTest extends WebTestCase
         $form = $crawler->selectButton('Lagre')->form();
 
         // Fill in the form
-        $form['interview[interviewPractical][monday]']->select("Bra");
-        $form['interview[interviewPractical][tuesday]']->select("Bra");
-        $form['interview[interviewPractical][wednesday]']->select("Ikke");
-        $form['interview[interviewPractical][thursday]']->select("Bra");
-        $form['interview[interviewPractical][friday]']->select("Ikke");
+        $form['application[applicationPractical][monday]']->select("Bra");
+        $form['application[applicationPractical][tuesday]']->select("Bra");
+        $form['application[applicationPractical][wednesday]']->select("Ikke");
+        $form['application[applicationPractical][thursday]']->select("Bra");
+        $form['application[applicationPractical][friday]']->select("Ikke");
 
-        $form['interview[interviewPractical][doublePosition]']->select("1");
-        $form['interview[interviewPractical][preferredGroup]']->select("Bolk 1");
-        $form['interview[interviewPractical][english]']->select("1");
+        $form['application[applicationPractical][doublePosition]']->select("1");
+        $form['application[applicationPractical][preferredGroup]']->select("Bolk 1");
+        $form['application[applicationPractical][english]']->select("1");
 
-        $form['interview[interviewAnswers][0][answer]'] = "Test answer";
-        $form['interview[interviewAnswers][1][answer]'] = "Test answer";
+        $form['application[interview][interviewAnswers][0][answer]'] = "Test answer";
+        $form['application[interview][interviewAnswers][1][answer]'] = "Test answer";
 
-        $form['interview[interviewScore][explanatoryPower]']->select(5);
-        $form['interview[interviewScore][roleModel]']->select(4);
-        $form['interview[interviewScore][suitability]']->select(6);
+        $form['application[interview][interviewScore][explanatoryPower]']->select(5);
+        $form['application[interview][interviewScore][roleModel]']->select(4);
+        $form['application[interview][interviewScore][suitability]']->select(6);
 
-        $form['interview[interviewScore][suitableAssistant]']->select("Ja");
+        $form['application[interview][interviewScore][suitableAssistant]']->select("Ja");
 
         // Submit the form
         $client->submit($form);
@@ -48,6 +48,12 @@ class InterviewControllerTest extends WebTestCase
         $this->assertGreaterThan(0, $crawler->filter('td:contains("6")')->count());
     }
 
+    private function verifyCorrectInterview($crawler, $firstName, $lastName){
+        $this->assertEquals(1, $crawler->filter('h1:contains("Intervju")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("'.$firstName.'")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("'.$lastName.'")')->count());
+    }
+
     public function testConduct()
     {
         // Admin user
@@ -56,15 +62,13 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/conduct/3');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/conduct/5');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Intervju")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Mark")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Zuckerberg")')->count());
+        $this->verifyCorrectInterview($crawler, "Erik", "Trondsen");
 
         $this->fillAndSubmitInterviewForm($client, $crawler);
 
@@ -73,10 +77,10 @@ class InterviewControllerTest extends WebTestCase
 
         // Assert that we have the correct page with the correct info (from the submitted form)
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Mark")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Zuckerberg")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Erik")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Trondsen")')->count());
 
-        $crawler = $client->request('GET', '/intervju/vis/3');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/vis/5');
         $this->verifyInterview($crawler);
         restoreDatabase();
 
@@ -86,15 +90,14 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/conduct/3');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/conduct/5');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Intervju")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Mark")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Zuckerberg")')->count());
+        $this->verifyCorrectInterview($crawler, "Erik", "Trondsen");
+
 
         $this->fillAndSubmitInterviewForm($client, $crawler);
 
@@ -103,10 +106,10 @@ class InterviewControllerTest extends WebTestCase
 
         // Assert that we have the correct page with the correct info (from the submitted form)
         $this->assertEquals(1, $crawler->filter('h1:contains("Opptak")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Mark")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Zuckerberg")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Erik")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Trondsen")')->count());
 
-        $crawler = $client->request('GET', '/intervju/vis/3');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/vis/5');
         $this->verifyInterview($crawler);
 
 
@@ -116,7 +119,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/conduct/3');
+        $client->request('GET', '/kontrollpanel/intervju/conduct/6');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -127,7 +130,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/conduct/3');
+        $client->request('GET', '/kontrollpanel/intervju/conduct/6');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -143,15 +146,13 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/vis/2');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/vis/4');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Intervju")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Walter")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("White")')->count());
+        $this->verifyCorrectInterview($crawler, "Markus", "Gundersen");
         $this->assertEquals(2, $crawler->filter('p:contains("Test answer")')->count());
 
         // Team user from the same department as the applicant
@@ -160,22 +161,11 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/vis/1');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/vis/4');
 
         // Assert that the page response status code is 200
-        $this->assertEquals(200, $client->getResponse()->getStatusCode());
-
-        // Assert that we have the correct page
-        $this->assertEquals(1, $crawler->filter('h1:contains("Intervju")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Leonardo")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("DiCaprio")')->count());
-        $this->assertEquals(2, $crawler->filter('p:contains("Test answer")')->count());
-
-        //Try viewing an interview that the team user did not conduct
-        $crawler = $client->request('GET', '/intervju/vis/2');
-
-        // Assert that the page response status code is 403
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
+
 
         // Team user from a different department than the applicant
         $client = static::createClient(array(), array(
@@ -183,7 +173,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/vis/1');
+        $client->request('GET', '/kontrollpanel/intervju/vis/4');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -194,7 +184,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/vis/1');
+        $client->request('GET', '/kontrollpanel/intervju/vis/4');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -208,7 +198,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/skjema/opprett');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/skjema/opprett');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -239,7 +229,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/skjema/opprett');
+        $client->request('GET', '/kontrollpanel/intervju/skjema/opprett');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -255,7 +245,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/skjema/1');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/skjema/1');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -286,7 +276,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/skjema/1');
+        $client->request('GET', '/kontrollpanel/intervju/skjema/1');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -301,7 +291,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/skjema');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/skjema');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
@@ -317,7 +307,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/skjema');
+        $client->request('GET', '/kontrollpanel/intervju/skjema');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -332,15 +322,15 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/settopp/3');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/settopp/6');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
         $this->assertEquals(1, $crawler->filter('h3:contains("Sett opp intervju")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Mark")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Zuckerberg")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Assistent")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Johansen")')->count());
 
         // Find the form
         $form = $crawler->selectButton('Lagre tidspunkt')->form();
@@ -364,15 +354,15 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $crawler = $client->request('GET', '/intervju/settopp/3');
+        $crawler = $client->request('GET', '/kontrollpanel/intervju/settopp/6');
 
         // Assert that the page response status code is 200
         $this->assertEquals(200, $client->getResponse()->getStatusCode());
 
         // Assert that we have the correct page
         $this->assertEquals(1, $crawler->filter('h3:contains("Sett opp intervju")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Mark")')->count());
-        $this->assertEquals(1, $crawler->filter('td:contains("Zuckerberg")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Assistent")')->count());
+        $this->assertEquals(1, $crawler->filter('td:contains("Johansen")')->count());
 
         // Find the form
         $form = $crawler->selectButton('Lagre tidspunkt')->form();
@@ -396,7 +386,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/settopp/3');
+        $client->request('GET', '/kontrollpanel/intervju/settopp/6');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());
@@ -407,7 +397,7 @@ class InterviewControllerTest extends WebTestCase
             'PHP_AUTH_PW'   => '1234',
         ));
 
-        $client->request('GET', '/intervju/settopp/3');
+        $client->request('GET', '/kontrollpanel/intervju/settopp/6');
 
         // Assert that the page response status code is 403 access denied
         $this->assertEquals(403, $client->getResponse()->getStatusCode());

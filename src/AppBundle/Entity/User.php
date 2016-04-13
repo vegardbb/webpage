@@ -11,15 +11,19 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * AppBundle\Entity\User
  *
- * @ORM\Table(name="User")
+ * @ORM\Table(name="user")
  * @ORM\Entity(repositoryClass="AppBundle\Entity\Repository\UserRepository")
  * @UniqueEntity(
- *      fields = {"email"},
- *      message = "Denne Eposten er allerede i bruk.")
+ *      fields={"email"},
+ *      message="Denne Eposten er allerede i bruk.",
+ *      groups={"create_user"}
+ * )
  *
  * @UniqueEntity(
- *      fields = {"user_name"},
- *      message = "Dette brukernavnet er allerede i bruk.")
+ *      fields={"user_name"},
+ *      message="Dette brukernavnet er allerede i bruk.",
+ *      groups={"create_user"}
+ * )
  */
 class User implements AdvancedUserInterface, \Serializable {
 
@@ -32,22 +36,26 @@ class User implements AdvancedUserInterface, \Serializable {
 	
 	/**
      * @ORM\Column(type="string", length=45)
+     * @Assert\NotBlank(groups={"admission", "create_user"}, message="Dette feltet kan ikke være tomt.")
      */
     private $lastName;
 	
 	/**
      * @ORM\Column(type="string", length=45)
+     * @Assert\NotBlank(groups={"admission", "create_user"}, message="Dette feltet kan ikke være tomt.")
      */
     private $firstName;
 	
 	/**
 	 * @ORM\ManyToOne(targetEntity="FieldOfStudy")
 	 * @ORM\JoinColumn(onDelete="SET NULL")
+     * @Assert\Valid
      */
     private $fieldOfStudy;
 	
 	/**
      * @ORM\Column(name="gender", type="boolean")
+     * @Assert\NotBlank(groups={"admission", "create_user"}, message="Dette feltet kan ikke være tomt.")
      */
     private $gender;
 	
@@ -58,21 +66,26 @@ class User implements AdvancedUserInterface, \Serializable {
 	
 	/**
      * @ORM\Column(type="string", length=45)
+     * @Assert\NotBlank(groups={"admission", "create_user"}, message="Dette feltet kan ikke være tomt.")
      */
     private $phone;
 
     /**
      * @ORM\Column(type="string", length=45, unique=true, nullable=true)
+     * @Assert\NotBlank(groups={"create_user"}, message="Dette feltet kan ikke være tomt.")
      */
     private $user_name;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
+     * @Assert\NotBlank(groups={"create_user"}, message="Dette feltet kan ikke være tomt.")
      */
     private $password;
 
     /**
      * @ORM\Column(type="string", length=45, unique=true)
+     * @Assert\NotBlank(groups={"admission", "create_user"}, message="Dette feltet kan ikke være tomt.")
+     * @Assert\Email(groups={"admission", "create_user"}, message="Ikke gyldig e-post.")
      */
     private $email;
 
@@ -84,6 +97,7 @@ class User implements AdvancedUserInterface, \Serializable {
 	/**
      * @ORM\ManyToMany(targetEntity="Role", inversedBy="users")
      * @ORM\JoinColumn(onDelete="cascade")
+     * @Assert\Valid
      */
     private $roles;
 
@@ -91,18 +105,24 @@ class User implements AdvancedUserInterface, \Serializable {
      * @ORM\column(type="string", nullable=true)
      */
 	private $new_user_code;
-	
+
+    /**
+     * @ORM\OneToMany(targetEntity="AssistantHistory", mappedBy="user")
+     */
+    private $assistantHistories;
+
 	/**
      * @ORM\OneToMany(targetEntity="CertificateRequest", mappedBy="user")
      **/
 	protected $certificateRequests;
-	
+
+
 	
 	public function __construct() {
         $this->roles = new ArrayCollection();
 		$this->fieldOfStudy = new ArrayCollection();
 		$this->certificateRequests = new ArrayCollection();
-		$this->isActive = true;
+		$this->isActive = false;
         $this->picture_path = 'images/defaultProfile.png';
     }
 	
@@ -121,6 +141,13 @@ class User implements AdvancedUserInterface, \Serializable {
 
 	public function getLastName() {
         return $this->lastName;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFullName(){
+        return $this->getFirstName() . " " . $this->getLastName();
     }
 
     function getEmail() {
@@ -275,10 +302,10 @@ class User implements AdvancedUserInterface, \Serializable {
     /**
      * Set fieldOfStudy
      *
-     * @param \AppBundle\Entity\FieldOfStudy $fieldOfStudy
+     * @param FieldOfStudy $fieldOfStudy
      * @return User
      */
-    public function setFieldOfStudy(\AppBundle\Entity\FieldOfStudy $fieldOfStudy = null)
+    public function setFieldOfStudy(FieldOfStudy $fieldOfStudy = null)
     {
         $this->fieldOfStudy = $fieldOfStudy;
 
@@ -288,7 +315,7 @@ class User implements AdvancedUserInterface, \Serializable {
     /**
      * Get fieldOfStudy
      *
-     * @return \AppBundle\Entity\FieldOfStudy
+     * @return FieldOfStudy
      */
     public function getFieldOfStudy()
     {
@@ -298,10 +325,10 @@ class User implements AdvancedUserInterface, \Serializable {
     /**
      * Add roles
      *
-     * @param \AppBundle\Entity\Role $roles
+     * @param Role $roles
      * @return User
      */
-    public function addRole(\AppBundle\Entity\Role $roles)
+    public function addRole(Role $roles)
     {
         $this->roles[] = $roles;
 
@@ -311,9 +338,9 @@ class User implements AdvancedUserInterface, \Serializable {
     /**
      * Remove roles
      *
-     * @param \AppBundle\Entity\Role $roles
+     * @param Role $roles
      */
-    public function removeRole(\AppBundle\Entity\Role $roles)
+    public function removeRole(Role $roles)
     {
         $this->roles->removeElement($roles);
     }
@@ -340,14 +367,36 @@ class User implements AdvancedUserInterface, \Serializable {
     {
         return $this->new_user_code;
     }
+
+    /**
+     * @return array
+     */
+    public function getAssistantHistories()
+    {
+        return $this->assistantHistories;
+    }
+
+    /**
+     * @param array $assistantHistories
+     */
+    public function setAssistantHistories($assistantHistories)
+    {
+        $this->assistantHistories = $assistantHistories;
+    }
+
+    public function addAssistantHistory(AssistantHistory $assistantHistory){
+        $this->assistantHistories[] = $assistantHistory;
+    }
+
+
 	
 	/**
      * Add certificateRequests
      *
-     * @param \AppBundle\Entity\CertificateRequest $certificateRequests
+     * @param CertificateRequest $certificateRequests
      * @return User
      */
-    public function addCertificateRequest(\AppBundle\Entity\CertificateRequest $certificateRequests)
+    public function addCertificateRequest(CertificateRequest $certificateRequests)
     {
         $this->certificateRequests[] = $certificateRequests;
 
@@ -357,9 +406,9 @@ class User implements AdvancedUserInterface, \Serializable {
     /**
      * Remove certificateRequests
      *
-     * @param \AppBundle\Entity\CertificateRequest $certificateRequests
+     * @param CertificateRequest $certificateRequests
      */
-    public function removeCertificateRequest(\AppBundle\Entity\CertificateRequest $certificateRequests)
+    public function removeCertificateRequest(CertificateRequest $certificateRequests)
     {
         $this->certificateRequests->removeElement($certificateRequests);
     }
